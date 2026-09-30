@@ -1,0 +1,41 @@
+name: Job Concurrency 
+
+on: 
+  push:
+    branches: [ main ]
+
+jobs:
+  build-react-app:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build # Group all runs belonging to this specific workflow, on this specific Git branch together
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6.1.0
+
+      - name: Setup Node JS
+        uses: actions/setup-node@v6.5.0
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build React App
+        run: npm run build
+
+      - name: Upload Build On Artifacts
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: reactjs-build
+          path: /dist
+
+      - name: Deploy React App
+        run: echo "Deployed Successfully"
+          
+      
+  
